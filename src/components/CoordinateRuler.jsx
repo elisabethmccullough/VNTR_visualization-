@@ -5,7 +5,7 @@ export default function CoordinateRuler({ coordinates }) {
     <section className="track coordinate-track" aria-label="Coordinate ruler">
       <div className="track-header">
         <strong>Coordinate ruler</strong>
-        <span>Coordinate guides (not variants)</span>
+        <span>Faint dashed lines = coordinate guides, not variants.</span>
       </div>
       <div className="ruler-line">
         {coordinates.map((coordinate, index) => (

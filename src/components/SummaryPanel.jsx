@@ -15,49 +15,58 @@ function FactList({ items }) {
   );
 }
 
-export default function SummaryPanel({ data }) {
-  const [hap1, hap2] = data.haplotypes;
-
+function BulletList({ title, items }) {
   return (
-    <aside className="summary-panel" aria-label="Clinical-style summary panel">
+    <div className="bullet-section">
+      <h3>{title}</h3>
+      <ul>
+        {items.map((item) => <li key={item}>{item}</li>)}
+      </ul>
+    </div>
+  );
+}
+
+export default function SummaryPanel({ data }) {
+  return (
+    <aside className="summary-panel" aria-label="Summary answer key panel">
       <SummaryCard title="Locus Summary">
         <FactList items={[
-          ['Gene', data.sample.gene],
-          ['Locus', data.sample.locus_label],
-          ['Reference genome', data.sample.reference_genome],
-          ['Primary motif', data.sample.primary_motif],
-          ['Variant type', data.sample.variant_type],
-          ['Region length', `${data.sample.region_length_bp} bp`],
-          ['GC content', `${data.sample.gc_content}%`],
+          ['Known region', data.region.knownRegion],
+          ['Gene', data.region.gene],
+          ['Locus', data.region.locus],
+          ['Reference genome', data.region.referenceGenome],
+          ['Primary motif', data.region.motif],
+          ['Variant type', data.region.variantType],
+          ['Clinical threshold', data.region.clinicalThreshold],
         ]} />
       </SummaryCard>
 
       <SummaryCard title="Reference">
-        <FactList items={[[ 'Repeat count', `${data.reference.repeat_count} repeats` ], [ 'Size', `${data.reference.size_bp} bp` ]]} />
+        <FactList items={[
+          ['Repeat count', `${data.reference.repeatCount} repeats`],
+          ['Size bp', `${data.reference.sizeBp} bp`],
+        ]} />
       </SummaryCard>
 
-      {[hap1, hap2].map((haplotype) => (
-        <SummaryCard title={haplotype.shortLabel} key={haplotype.id}>
-          <FactList items={[
-            ['Repeat count', `${haplotype.repeat_count} repeats`],
-            ['Size', `${haplotype.size_bp} bp`],
-            ['Finding', haplotype.statusShort],
-            ['Supporting reads', haplotype.supporting_reads],
-            ['Spanning reads', haplotype.spanning_reads],
-            ['Confidence', haplotype.confidence],
-          ]} />
-        </SummaryCard>
-      ))}
+      <SummaryCard title="Observed Allele Groups">
+        {data.caseData.observedAlleleGroups.map((group) => (
+          <div className="allele-summary" key={group.id}>
+            <h3>{group.label}</h3>
+            <FactList items={[
+              ['Repeat count', `${group.repeatCount} repeats`],
+              ['Size bp', `${group.sizeBp} bp`],
+              ['Status', group.status],
+              ['Supporting reads', group.supportingReads],
+              ['Spanning reads', group.spanningReads],
+              ['Confidence', group.confidence],
+            ]} />
+          </div>
+        ))}
+      </SummaryCard>
 
-      <SummaryCard title="Clinical interpretation / warning" tone="warning-card">
-        <p>
-          Observed finding: Haplotype 2 is expanded relative to the reference. Larger repeat count may indicate increased expansion instability risk. Motif interruptions are present. Only 4 spanning reads support the expanded haplotype. Clinical significance is uncertain because no established threshold is available for this mock VNTR.
-        </p>
-        <div className="caution-tags">
-          <span>Expanded allele detected</span>
-          <span>Clinical threshold not established</span>
-          <span>Review recommended</span>
-        </div>
+      <SummaryCard title="Interpretation / Warnings" tone="warning-card">
+        <BulletList title="Observed finding" items={data.caseData.observedFinding} />
+        <BulletList title="Caution" items={data.caseData.cautions} />
       </SummaryCard>
     </aside>
   );
