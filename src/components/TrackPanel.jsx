@@ -4,36 +4,60 @@ import CoverageTrack from './CoverageTrack.jsx';
 import SpanningReadsTrack from './SpanningReadsTrack.jsx';
 import MotifTrack from './MotifTrack.jsx';
 
-export default function TrackPanel({ data, selectedHaplotype, setSelectedHaplotype, showCoverage, showMotif, collapsedHap2 }) {
-  const [hap1, hap2] = data.haplotypes;
-
+export default function TrackPanel({ data, selectedGroup, setSelectedGroup, showCoverage, showMotif, showPartialReads, collapsedMotifs }) {
   return (
     <main className="track-panel">
       <div className="browser-header">
         <div>
           <p className="eyebrow">Current locus</p>
-          <h2>{data.sample.gene} VNTR · {data.sample.locus_label}</h2>
+          <h2>{data.region.gene} VNTR · {data.region.locus}</h2>
+          <p>{data.region.knownRegion} · {data.caseData.label}</p>
         </div>
-        <button className="clear-selection" type="button" onClick={() => setSelectedHaplotype('all')}>Show all reads</button>
+        <button className="clear-selection" type="button" onClick={() => setSelectedGroup('all')}>Expand read evidence</button>
       </div>
 
-      <div className="browser-surface">
-        <div className="guide-lines" aria-hidden="true">
-          {[0, 25, 50, 75, 100].map((left) => <span key={left} style={{ left: `${left}%` }} />)}
+      <div className="alert-banner">{data.caseData.alert}</div>
+
+      <div className="browser-scroll">
+        <div className="browser-surface">
+          <div className="guide-lines" aria-hidden="true">
+            {[0, 25, 50, 75, 100].map((left) => <span key={left} style={{ left: `${left}%` }} />)}
+          </div>
+          <div className="vntr-shade" aria-hidden="true"><span>VNTR repeat region</span></div>
+          <CoordinateRuler coordinates={data.coordinates} />
+          <HaplotypeTrack
+            type="reference"
+            data={{ ...data.reference, id: 'reference', referenceGenome: data.region.referenceGenome }}
+            selectedGroup={selectedGroup}
+            setSelectedGroup={setSelectedGroup}
+            motif={data.region.motif}
+          />
+          {data.caseData.observedAlleleGroups.map((group) => (
+            <HaplotypeTrack
+              key={group.id}
+              data={group}
+              selectedGroup={selectedGroup}
+              setSelectedGroup={setSelectedGroup}
+              collapsed={collapsedMotifs}
+              motif={data.region.motif}
+            />
+          ))}
+          {showCoverage && <CoverageTrack coverage={data.coverage} />}
+          <SpanningReadsTrack
+            reads={data.caseData.reads}
+            alleleGroups={data.caseData.observedAlleleGroups}
+            selectedGroup={selectedGroup}
+            setSelectedGroup={setSelectedGroup}
+            showPartialReads={showPartialReads}
+          />
+          {showMotif && <MotifTrack motifs={data.motifEvidence} />}
         </div>
-        <CoordinateRuler coordinates={data.coordinates} />
-        <HaplotypeTrack type="reference" data={data.reference} selectedHaplotype={selectedHaplotype} setSelectedHaplotype={setSelectedHaplotype} />
-        <HaplotypeTrack data={hap1} selectedHaplotype={selectedHaplotype} setSelectedHaplotype={setSelectedHaplotype} />
-        <HaplotypeTrack data={hap2} selectedHaplotype={selectedHaplotype} setSelectedHaplotype={setSelectedHaplotype} collapsed={collapsedHap2} />
-        {showCoverage && <CoverageTrack coverage={data.coverage} />}
-        <SpanningReadsTrack reads={data.reads} selectedHaplotype={selectedHaplotype} setSelectedHaplotype={setSelectedHaplotype} />
-        {showMotif && <MotifTrack motifs={data.motifEvidence} />}
       </div>
 
       <div className="helper-text">
-        <p>A spanning read crosses the left flank, the full VNTR, and the right flank.</p>
-        <p>Coverage shows how many reads overlap a coordinate, not how many repeats are present.</p>
-        <p>Motif interruptions are alternate repeat units within the VNTR.</p>
+        <p>In detailed view, each block is one motif unit. In collapsed view, one labeled block may represent a run of identical motifs.</p>
+        <p>CAG × 12 means twelve consecutive CAG motif units.</p>
+        <p>Yellow dashed lines mark VNTR boundaries; faint gray dashed lines are coordinate guides, not variants.</p>
       </div>
     </main>
   );

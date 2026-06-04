@@ -1,33 +1,29 @@
-# VNTR Locus & Haplotype Explorer
+# VNTR Locus & Haplotype Explorer — Prototype #2
 
-A Vite + React front-end prototype for visualizing a mock Variable Number Tandem Repeat (VNTR) locus from long-read sequencing data.
+A Vite + React front-end prototype for exploring a mock Variable Number Tandem Repeat (VNTR) locus using hardcoded long-read-style evidence.
 
-## What this prototype shows
+**Demo data only — not for clinical use.** This prototype is designed for interface design, education, and workflow discussion. It does not perform real genomic analysis or clinical classification.
 
-- A dark genome-browser-style track view for the mock `ACAN` VNTR locus `chr15:89,850,410-89,850,790`.
-- Reference, haplotype, coverage, spanning-read, and motif evidence tracks.
-- A right-side summary panel with repeat counts, read support, confidence, and cautious interpretation language.
-- Simple interactions for highlighting haplotypes, toggling coverage and motif tracks, and switching Haplotype 2 between collapsed and expanded motif displays.
+## What Prototype #2 shows
 
-## Important limitations
+- A dark genome-browser-style **Haplotype Explorer** for a mock VNTR locus.
+- A **Known Region** dropdown concept with demo metadata for ACAN, FMR1, HTT, DMPK, and C9orf72 examples.
+- A reference track showing flanks and the reference repeat count.
+- A dynamic list of observed allele groups rendered from mock data rather than assuming exactly two haplotypes.
+- Allele/group tracks with repeat counts, size in base pairs, confidence, read support, and motif block patterns.
+- Collapsed and detailed motif displays, including motif interruption colors.
+- Coverage/read-depth evidence labeled clearly as read depth, not repeat length.
+- Spanning reads grouped by their supporting allele/group, with partial or ambiguous reads shown separately.
+- VNTR boundary markers and coordinate guide lines with explanatory labels.
+- A wider right-side “answer key” summary panel with locus metadata, reference repeat count, observed allele groups, confidence, and warnings.
 
-This is a learning and UI prototype only.
-
-- It uses hardcoded mock data from `src/data/mockVntrData.js`.
-- It does not use real patient-identifying information.
-- It does not parse BAM, CRAM, VCF, FASTQ, or other genomics files.
-- It does not perform real VNTR calling.
-- It does not provide clinical classification and does not label the mock VNTR as pathogenic.
-
-## Setup
+## How to run
 
 Install dependencies:
 
 ```bash
 npm install
 ```
-
-## Run locally
 
 Start the Vite development server:
 
@@ -37,30 +33,44 @@ npm run dev
 
 Then open the local URL printed by Vite, usually `http://localhost:5173/`.
 
+## The 3 tabs
+
+1. **Individual Overview**
+   A case-level summary for sample `HG001`, including specimen type, sequencing type, selected known region, gene, motif, reference repeat count, observed allele group count, main finding, confidence, and cautious interpretation.
+
+2. **Haplotype Explorer**
+   The main genome-browser-style visualization. This tab includes the Known Region selector, Case type selector, coordinate ruler, reference track, observed allele/group tracks, coverage track, spanning-read evidence, motif evidence, legend, and summary panel.
+
+3. **Cohort / All Samples View**
+   A simple mock cohort table and CSS-only repeat-count distribution view for comparing repeat sizes across samples and identifying outliers.
+
+## The 3 mock case types
+
+1. **Standard 2-haplotype case**
+   Shows two phased groups: `Haplotype 1 / Maternal` with 20 repeats and `Haplotype 2 / Paternal` with 46 repeats.
+
+2. **1 observed allele group**
+   Shows `Observed Allele Pattern 1` with 20 repeats and warns that one observed pattern may reflect homozygosity, hemizygosity, or unresolved second-haplotype support.
+
+3. **3 repeat-size clusters**
+   Shows `Repeat-size Cluster A`, `Repeat-size Cluster B`, and `Repeat-size Cluster C`, with a warning to review for mosaicism, copy-number complexity, sample heterogeneity, or technical artifact.
+
+## Important limitations
+
+This is a mock UI prototype only.
+
+- It uses hardcoded mock data from `src/data/mockVntrData.js`.
+- It has no backend.
+- It does not parse BAM, CRAM, VCF, FASTQ, or other genomics files.
+- It does not perform real VNTR calling.
+- It does not perform real phasing.
+- It does not provide clinical classification.
+- It does not make pathogenicity claims.
+
 ## Build
 
 Create a production build:
 
 ```bash
 npm run build
-```
-
-## Project structure
-
-```text
-package.json
-index.html
-src/main.jsx
-src/App.jsx
-src/App.css
-src/data/mockVntrData.js
-src/components/TopBar.jsx
-src/components/CoordinateRuler.jsx
-src/components/TrackPanel.jsx
-src/components/HaplotypeTrack.jsx
-src/components/CoverageTrack.jsx
-src/components/SpanningReadsTrack.jsx
-src/components/MotifTrack.jsx
-src/components/SummaryPanel.jsx
-src/components/Legend.jsx
 ```
